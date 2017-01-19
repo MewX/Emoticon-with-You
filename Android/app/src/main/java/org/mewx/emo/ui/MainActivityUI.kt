@@ -1,13 +1,15 @@
 package org.mewx.emo.ui
 
 import android.os.Build
+import android.support.design.widget.NavigationView
 import android.view.Gravity
+import android.view.View.generateViewId
 import android.widget.LinearLayout
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.navigationView
 import org.jetbrains.anko.support.v4.drawerLayout
-import org.mewx.emo.R
 import org.mewx.emo.view.MainActivity
+import org.mewx.emo.R
 
 /**
  * MainActivity UI
@@ -15,62 +17,72 @@ import org.mewx.emo.view.MainActivity
  */
 
 class MainActivityUI : AnkoComponent<MainActivity> {
-    val ID_DRAWER_LAYOUT = 1
-    val ID_NAVIGATION_VIEW = 2
-    val ID_IMAGE_VIEW = 3
-    val ID_TEXT_NAME = 4
-    val ID_TEXT_DESCRIPTION = 5
+
+    companion object {
+        val ID_DRAWER_LAYOUT = generateViewId()
+        val ID_NAVIGATION_VIEW = generateViewId()
+        val ID_IMAGE_VIEW = generateViewId()
+        val ID_TEXT_NAME = generateViewId()
+        val ID_TEXT_DESCRIPTION = generateViewId()
+    }
 
     override fun createView(ui: AnkoContext<MainActivity>) = with(ui) {
         drawerLayout {
-            lparams(width = matchParent, height = matchParent)
             id = ID_DRAWER_LAYOUT
             fitsSystemWindows = true
 
             // tool bar
-            AppBarMainUI().createView(ui)
+            val appBarLayoutContext = AnkoContext.create(ctx, this)
+            addView(AppBarMainUI().createView(appBarLayoutContext))
 
             navigationView {
-                lparams(width = wrapContent, height = matchParent)
                 id = ID_NAVIGATION_VIEW
-                foregroundGravity = Gravity.START
-                fitsSystemWindows = true
 
-                addHeaderView(navHeaderView(ui))
+                val headerContext = AnkoContext.create(ctx, this);
+                val headerView = NavigationHeaderUI().createView(headerContext)
+                        .lparams(width = matchParent, height = dimen(R.dimen.nav_header_height))
+                addHeaderView(headerView)
                 inflateMenu(R.menu.activity_main_drawer)
+            }.lparams(width = wrapContent, height = matchParent) {
+                gravity = Gravity.START
+                fitsSystemWindows = true
             }
         }
     }
 
-    private fun navHeaderView(ui: AnkoContext<MainActivity>) = with(ui) {
-        linearLayout {
-            lparams(width = matchParent, height = dip(160))
-            backgroundResource =R.drawable.side_nav_bar
-            gravity = Gravity.BOTTOM
-            orientation = LinearLayout.VERTICAL
-            setPadding(dip(64), dip(16), dip(64), dip(16))
+    private class NavigationHeaderUI : AnkoComponent<NavigationView> {
+        override fun createView(ui: AnkoContext<NavigationView>) = with(ui) {
+            linearLayout(theme = R.style.ThemeOverlay_AppCompat_Dark) {
+                lparams(width = matchParent, height = dimen(R.dimen.nav_header_height))
+                backgroundResource = R.drawable.side_nav_bar
+                gravity = Gravity.BOTTOM
+                orientation = LinearLayout.VERTICAL
+                verticalPadding = dimen(R.dimen.activity_vertical_margin)
+                horizontalPadding = dimen(R.dimen.activity_horizontal_margin)
 
-            imageView {
-                id = ID_IMAGE_VIEW
-                topPadding = dip(16)
-                imageResource = android.R.drawable.sym_def_app_icon
-            }
-
-            textView {
-                lparams(width = matchParent, height = wrapContent)
-                id = ID_TEXT_NAME
-                topPadding = dip(16)
-                text = "MewX test"
-                if (Build.VERSION.SDK_INT >= 23) {
-                    setTextAppearance(R.style.TextAppearance_AppCompat_Body1)
-                } else {
-                    setTextAppearance(context, android.R.style.TextAppearance_Medium)
+                imageView {
+                    id = ID_IMAGE_VIEW
+                    topPadding = dimen(R.dimen.nav_header_vertical_spacing)
+                    imageResource = android.R.drawable.sym_def_app_icon
+                }.lparams {
+                    gravity = Gravity.START
                 }
-            }
 
-            textView {
-                id = ID_TEXT_DESCRIPTION
-                text = "i@mewx.org"
+                textView {
+                    id = ID_TEXT_NAME
+                    topPadding = dimen(R.dimen.nav_header_vertical_spacing)
+                    text = "MewX test"
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        setTextAppearance(R.style.TextAppearance_AppCompat_Body1)
+                    } else {
+                        setTextAppearance(context, R.style.TextAppearance_AppCompat_Body1)
+                    }
+                }.lparams(width = matchParent, height = wrapContent)
+
+                textView {
+                    id = ID_TEXT_DESCRIPTION
+                    text = "i@mewx.org"
+                }
             }
         }
     }

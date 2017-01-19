@@ -1,8 +1,9 @@
 package org.mewx.emo.ui
 
-import android.app.Activity
-import android.support.annotation.AttrRes
-import android.util.TypedValue
+import android.support.design.widget.AppBarLayout
+import android.support.v4.widget.DrawerLayout
+import android.view.Gravity
+import android.view.View.generateViewId
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.toolbar
 import org.jetbrains.anko.design.appBarLayout
@@ -14,54 +15,47 @@ import org.mewx.emo.R
  * Created by MewX on 1/15/2017.
  */
 
-class AppBarMainUI : AnkoComponent<Activity> {
-    val ID_TOOLBAR = 1
-    val ID_FLOATING_ACTION_BUTTON = 2
-    val ID_CONTENT_MAIN = 3
+class AppBarMainUI : AnkoComponent<DrawerLayout> {
 
-    override fun createView(ui: AnkoContext<Activity>) = with(ui) {
+    companion object {
+        val ID_TOOLBAR = generateViewId()
+        val ID_FLOATING_ACTION_BUTTON = generateViewId()
+        val ID_CONTENT_MAIN = generateViewId()
+    }
+
+    override fun createView(ui: AnkoContext<DrawerLayout>) = with(ui) {
         coordinatorLayout {
             lparams(width = matchParent, height = matchParent)
-            fitsSystemWindows = true
-
             appBarLayout(theme = R.style.AppTheme_AppBarOverlay) {
-                lparams(width = matchParent, height = wrapContent)
-
-                toolbar(theme = R.style.AppTheme_PopupOverlay) {
-                    lparams(width = matchParent, height = owner.getAttrDimen(R.attr.actionBarSize))
+                toolbar {
+                    lparams(width = matchParent, height = dip(56)) // todo: height = dimenAttr(R.attr.actionBarSize))
                     id = ID_TOOLBAR
+                    backgroundColor = resources.getColor(R.color.colorPrimary)
+                    popupTheme = R.style.AppTheme_PopupOverlay
                 }
-            }
+            }.lparams(width = matchParent, height = wrapContent)
 
             // content main
             relativeLayout {
-                lparams (width = matchParent, height = matchParent)
-                setPadding(dip(64), dip(16), dip(64), dip(16))
+                id = ID_CONTENT_MAIN
+                verticalPadding = dimen(R.dimen.activity_vertical_margin)
+                horizontalPadding = dimen(R.dimen.activity_horizontal_margin)
 
                 textView {
                     text = "Test MewX"
                 }
+            }.lparams(width = matchParent, height = matchParent) {
+                behavior = AppBarLayout.ScrollingViewBehavior()
             }
 
             // floating action button
             floatingActionButton {
-                lparams {
-                    margin = dip(16)
-                    gravity = bottom or right
-                }
                 id = ID_FLOATING_ACTION_BUTTON
                 imageResource = android.R.drawable.ic_dialog_email
+            }.lparams {
+                margin = dimen(R.dimen.fab_margin)
+                gravity = Gravity.BOTTOM or Gravity.END
             }
         }
     }
-
-    /**
-     * For activity to get attribute values
-     */
-    fun Activity.getAttrDimen(@AttrRes attr: Int): Int {
-        val outValue = TypedValue()
-        theme.resolveAttribute(attr, outValue, true)
-        return resources.getDimension(outValue.resourceId).toInt()
-    }
-
 }
