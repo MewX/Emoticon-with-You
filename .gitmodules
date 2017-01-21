@@ -1,0 +1,12 @@
+[submodule "Android/kotlin-anko"]
+	path = Android/kotlin-anko
+	url = https://github.com/lightningkite/kotlin-anko
+[submodule "Android/kotlin-observable"]
+	path = Android/kotlin-observable
+	url = https://github.com/lightningkite/kotlin-observable
+[submodule "Android/kotlin-anko-observable"]
+	path = Android/kotlin-anko-observable
+	url = https://github.com/lightningkite/kotlin-anko-observable
+[submodule "Android/kotlin-core"]
+	path = Android/kotlin-core
+	url = https://github.com/lightningkite/kotlin-core
